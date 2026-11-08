@@ -1,0 +1,25 @@
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 本地私有配置
+application-local.yml

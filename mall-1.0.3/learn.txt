@@ -1,0 +1,23 @@
+于项目 查漏补缺
+1. HttpServletRequest（原始数据源）
+是什么：它是 Java Web 规范中定义的原生请求对象。浏览器发来的所有原始数据都装在里面。
+
+装了什么：请求 URL (getRequestURL())、请求方法 (GET/POST)、客户端 IP、请求头（Header）、参数（Param）等。
+
+在代码里的作用：它是数据的源头。你的切面要记录日志，首先得从这个对象里把 URL、方法名、IP 地址“拽”出来。
+
+
+2. ServletRequestAttributes（数据桥梁/搬运工）
+是什么：它是 Spring 框架提供的一个工具包装类。它的唯一使命就是把 HttpServletRequest 绑定到当前线程（ThreadLocal）上。
+
+为什么需要它：你的切面方法 (doAround) 没有入参是 HttpServletRequest。但是切面内部必须拿到请求对象，怎么办？Spring 在处理 HTTP 请求时，会把当前请求放到一个“线程本地变量”里。ServletRequestAttributes 就是你去这个“仓库”取货时的取货凭证。
+
+在代码里的作用：通过 RequestContextHolder.getRequestAttributes()，你拿到的是 ServletRequestAttributes，然后调用 .getRequest()，这才成功拿到了上面的 HttpServletRequest。如果没有它，你就无法在 AOP 切面里拿到请求对象。
+
+
+3. WebLog（数据收纳箱/自定义 DTO）
+是什么：它是你项目里自定义的一个普通 Java 类（POJO）（路径是 com.macro.mall.common.domain.WebLog）。
+
+装了什么：它并不是框架自带的，而是开发者根据业务需求设计的。看代码，它里面定义了 url、description（接口描述）、parameter（请求参数）、result（返回结果）、spendTime（耗时）等字段。
+
+在代码里的作用：它就像一个Excel 表格模板。HttpServletRequest 里的数据是零散的（URL、IP 散落各处），业务方法的返回值也是零散的。WebLog 的作用就是把所有这些零散数据组装、归纳、格式化成一个统一的对象。最后，这个对象被 JSONUtil.parse(webLog) 序列化成 JSON 字符串打印进日志。
